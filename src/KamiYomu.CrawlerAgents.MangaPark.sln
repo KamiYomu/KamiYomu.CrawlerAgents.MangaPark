@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36705.20
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KamiYomu.CrawlerAgents.MangaPark", "KamiYomu.CrawlerAgents.MangaPark\KamiYomu.CrawlerAgents.MangaPark.csproj", "{FBBFC9B4-3425-18D1-7776-6B0353616B3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KamiYomu.CrawlerAgents.ConsoleApp", "KamiYomu.CrawlerAgents.ConsoleApp\KamiYomu.CrawlerAgents.ConsoleApp.csproj", "{4AC18876-E003-9996-347B-48215310AA02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FBBFC9B4-3425-18D1-7776-6B0353616B3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBBFC9B4-3425-18D1-7776-6B0353616B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBBFC9B4-3425-18D1-7776-6B0353616B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBBFC9B4-3425-18D1-7776-6B0353616B3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AC18876-E003-9996-347B-48215310AA02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AC18876-E003-9996-347B-48215310AA02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AC18876-E003-9996-347B-48215310AA02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AC18876-E003-9996-347B-48215310AA02}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4463254B-36E1-45A1-A737-210CC787833F}
+	EndGlobalSection
+EndGlobal
