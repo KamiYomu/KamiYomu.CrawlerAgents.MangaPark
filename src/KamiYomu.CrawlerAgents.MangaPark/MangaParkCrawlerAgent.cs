@@ -68,7 +68,7 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
         using var page = await browser.NewPageAsync();
         await PreparePageForNavigationAsync(page);
         await page.SetUserAgentAsync(HttpClientDefaultUserAgent);
-        var pageNumber = string.IsNullOrWhiteSpace(paginationOptions.ContinuationToken)
+        var pageNumber = string.IsNullOrWhiteSpace(paginationOptions?.ContinuationToken)
                         ? 1
                         : int.Parse(paginationOptions.ContinuationToken);
 
@@ -384,7 +384,7 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
         var content = await response.TextAsync();
         var document = new HtmlDocument();
         document.LoadHtml(content);
-        var rootNode = document.DocumentNode.SelectSingleNode("//*[contains(@*[local-name()='q:id'], '7t')]"); ;
+        var rootNode = document.DocumentNode.SelectSingleNode("//div[@data-name='chapter-list']");
         IEnumerable<Chapter> chapters = ConvertChaptersFromSingleBook(manga, rootNode);
 
         return PagedResultBuilder<Chapter>.Create()
