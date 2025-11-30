@@ -22,7 +22,6 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
     private readonly Uri _baseUri;
     private readonly string _language;
     private Lazy<Task<IBrowser>> _browser;
-    private bool disposedValue;
     public MangaParkCrawlerAgent(IDictionary<string, object> options) : base(options)
     {
         _baseUri = new Uri("https://mangapark.net");
@@ -74,9 +73,19 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
         var targetUri = new Uri(new Uri(_baseUri.ToString()), $"search?word={titleName}&lang={_language}&sortby=field_score&ig_genres=1&page={pageNumber}");
         await page.GoToAsync(targetUri.ToString(), new NavigationOptions
         {
-            WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Load },
+            WaitUntil = [WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Load],
             Timeout = TimeoutMilliseconds
         });
+
+        // Get cookies
+        var cookies = await page.GetCookiesAsync();
+
+        // Print them
+        foreach (var cookie in cookies)
+        {
+           Logger?.LogWarning($"{cookie.Name} = {cookie.Value}; Domain={cookie.Domain}; Path={cookie.Path}");
+        }
+
 
         var content = await page.GetContentAsync();
 
@@ -393,7 +402,6 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
                                           .Build();
     }
 
-
     private List<Chapter> ConvertChaptersFromSingleBook(Manga manga, HtmlNode rootNode)
     {
         var chapters = new List<Chapter>();
@@ -518,6 +526,11 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
             }
         };
 
+        await page.SetCookieAsync([
+            new CookieParam { Name = "nsfw", Value = "2", Domain = ".mangapark.net", Path = "/", HttpOnly = true, Secure = true },
+            new CookieParam { Name = "theme", Value = "mdark", Domain = ".mangapark.net", Path = "/", HttpOnly = true, Secure = true }
+        ]);
+
         await page.EvaluateExpressionOnNewDocumentAsync(@"
         // Neutralize devtools detection
         const originalLog = console.log;
@@ -554,25 +567,6 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
             }};
         ");
 
-        await page.SetCookieAsync(
-            new CookieParam
-            {
-                Name = "nsfw",
-                Value = "2",
-                Domain = ".mangapark.net",
-                Path = "/",
-                HttpOnly = true,
-                Secure = true
-            },
-        new CookieParam
-        {
-            Name = "theme",
-            Value = "mdark",
-            Domain = ".mangapark.net",
-            Path = "/",
-            HttpOnly = true,
-            Secure = true
-        });
 
     }
 
@@ -643,7 +637,7 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposed)
         {
             if (disposing)
             {
@@ -654,7 +648,7 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
 
             }
 
-            disposedValue = true;
+            _disposed = true;
         }
     }
 
@@ -665,7 +659,6 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
 
     public void Dispose()
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
