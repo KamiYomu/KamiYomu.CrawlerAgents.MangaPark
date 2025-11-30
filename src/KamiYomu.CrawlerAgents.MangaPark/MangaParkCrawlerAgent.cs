@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp;
 using System.ComponentModel;
 using System.Globalization;
-using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using System.Web;
 using Page = KamiYomu.CrawlerAgents.Core.Catalog.Page;
@@ -16,7 +15,7 @@ using Page = KamiYomu.CrawlerAgents.Core.Catalog.Page;
 namespace KamiYomu.CrawlerAgents.MangaPark;
 
 [DisplayName("KamiYomu Crawler Agent – mangapark.net")]
-[CrawlerSelect("Language", "Chapter Translation language, translated fields such as Titles and Descriptions", ["en", "pt_br", "pt",])]
+[CrawlerSelect("Language", "Chapter Translation language, translated fields such as Titles and Descriptions", ["en", "pt_br", "pt"])]
 public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
 {
     private bool _disposed = false;
@@ -72,7 +71,7 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
                         ? 1
                         : int.Parse(paginationOptions.ContinuationToken);
 
-        var targetUri = new Uri(new Uri(_baseUri.ToString()), $"search?word={UrlEncoder.Default.Encode(titleName)}&lang={_language}&sortby=field_score&ig_genres=1&page={pageNumber}");
+        var targetUri = new Uri(new Uri(_baseUri.ToString()), $"search?word={titleName}&lang={_language}&sortby=field_score&ig_genres=1&page={pageNumber}");
         await page.GoToAsync(targetUri.ToString(), new NavigationOptions
         {
             WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Load },
@@ -241,6 +240,7 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
             .WithLatestChapterAvailable(decimal.TryParse(chapter, out var chapterResult) ? chapterResult : 0)
             .WithLastVolumeAvailable(decimal.TryParse(volume, out var volumeResult) ? volumeResult : 0)
             .WithTags([.. genres])
+            .WithOriginalLanguage(_language)
             .WithIsFamilySafe(!genres.Any(g => IsGenreNotFamilySafe(g)))
             .Build();
 
@@ -491,8 +491,8 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
         {
             WaitUntil = [WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Load],
             Timeout = TimeoutMilliseconds
-        }); 
-        
+        });
+
         var content = await page.GetContentAsync();
         var document = new HtmlDocument();
         document.LoadHtml(content);
@@ -517,8 +517,6 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
                 }
             }
         };
-
-
 
         await page.EvaluateExpressionOnNewDocumentAsync(@"
         // Neutralize devtools detection
@@ -556,25 +554,26 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
             }};
         ");
 
-        await page.SetCookieAsync(new CookieParam
-        {
-            Name = "nsfw",
-            Value = "2",
-            Domain = ".mangapark.net",
-            Path = "/",
-            HttpOnly = false,
-            Secure = true
-        });
-
-        await page.SetCookieAsync(new CookieParam
+        await page.SetCookieAsync(
+            new CookieParam
+            {
+                Name = "nsfw",
+                Value = "2",
+                Domain = ".mangapark.net",
+                Path = "/",
+                HttpOnly = true,
+                Secure = true
+            },
+        new CookieParam
         {
             Name = "theme",
             Value = "mdark",
             Domain = ".mangapark.net",
             Path = "/",
-            HttpOnly = false,
+            HttpOnly = true,
             Secure = true
         });
+
     }
 
     private static bool IsGenreNotFamilySafe(string p)
@@ -648,11 +647,13 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
         {
             if (disposing)
             {
-                // TODO: dispose managed state (managed objects)
+                if (_browser.IsValueCreated)
+                {
+                    _browser.Value.Result.Dispose();
+                }
+
             }
 
-            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-            // TODO: set large fields to null
             disposedValue = true;
         }
     }
