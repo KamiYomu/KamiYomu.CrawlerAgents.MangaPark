@@ -77,15 +77,10 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
             Timeout = TimeoutMilliseconds
         });
 
-        // Get cookies
-        var cookies = await page.GetCookiesAsync();
-
-        // Print them
-        foreach (var cookie in cookies)
+        foreach (var cookie in await page.GetCookiesAsync())
         {
-           Logger?.LogWarning($"{cookie.Name} = {cookie.Value}; Domain={cookie.Domain}; Path={cookie.Path}");
+            Logger?.LogDebug("{name}={value}; Domain={domain}; Path={path}", cookie.Name, cookie.Value, cookie.Domain, cookie.Path);
         }
-
 
         var content = await page.GetContentAsync();
 
@@ -270,7 +265,12 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
             Timeout = TimeoutMilliseconds
         });
 
-        var content = await response.TextAsync();
+        foreach (var cookie in await page.GetCookiesAsync())
+        {
+            Logger?.LogDebug("{name}={value}; Domain={domain}; Path={path}", cookie.Name, cookie.Value, cookie.Domain, cookie.Path);
+        }
+
+        var content = await page.GetContentAsync();
         var document = new HtmlDocument();
         document.LoadHtml(content);
         var rootNode = document.DocumentNode.SelectSingleNode("//*[contains(@*[local-name()='q:key'], 'g0_13')]"); ;
@@ -390,7 +390,13 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
             Timeout = TimeoutMilliseconds
         });
 
-        var content = await response.TextAsync();
+        foreach (var cookie in await page.GetCookiesAsync())
+        {
+            Logger?.LogDebug("{name}={value}; Domain={domain}; Path={path}", cookie.Name, cookie.Value, cookie.Domain, cookie.Path);
+        }
+
+        var content = await page.GetContentAsync();
+
         var document = new HtmlDocument();
         document.LoadHtml(content);
         var rootNode = document.DocumentNode.SelectSingleNode("//div[@data-name='chapter-list']");
@@ -500,6 +506,11 @@ public partial class MangaParkCrawlerAgent : AbstractCrawlerAgent, ICrawlerAgent
             WaitUntil = [WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Load],
             Timeout = TimeoutMilliseconds
         });
+
+        foreach (var cookie in await page.GetCookiesAsync())
+        {
+            Logger?.LogDebug("{name}={value}; Domain={domain}; Path={path}", cookie.Name, cookie.Value, cookie.Domain, cookie.Path);
+        }
 
         var content = await page.GetContentAsync();
         var document = new HtmlDocument();
