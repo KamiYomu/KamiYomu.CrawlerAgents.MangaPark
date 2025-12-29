@@ -15,8 +15,8 @@
 		<RepositoryUrl>https://github.com/KamiYomu/KamiYomu.CrawlerAgents.MangaPark</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>kamiyomu;kamiyomu-crawler-agents;manga-download;mangapark</PackageTags>
-		<PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
-		<Copyright>© KamiYomu. Licensed under GPL-3.0.</Copyright>
+		<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+		<Copyright>© KamiYomu. Licensed under AGPL-3.0.</Copyright>
 		<PackageIconUrl>https://raw.githubusercontent.com/KamiYomu/KamiYomu.CrawlerAgents.MangaPark/main/src/KamiYomu.CrawlerAgents.MangaPark/Resources/logo.png</PackageIconUrl>
 		<PackageIcon>Resources/logo.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
